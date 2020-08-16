@@ -1,6 +1,6 @@
 /* GAME FUNCTIONS */
 
-// function to start a new game
+// FUNCTION TO START NEW GAME 
 var startGame = function () {
   // reset player stats
   playerInfo.reset();
@@ -10,7 +10,7 @@ var startGame = function () {
     // if player is still alive, keep fight next enemy
     if (playerInfo.health > 0) {
       // let user know what round they are in, remember that arrays start at 0 so it needs to have 1 added to it
-      window.alert('Welcome to Robot Gladiators! Round ' + (i + 1));
+      window.alert("Welcome to Robot Gladiators! Round " + (i + 1));
 
       // pick new enemy to fight based on the index of the enemyInfo array
       var pickedEnemyObj = enemyInfo[i];
@@ -33,7 +33,9 @@ var startGame = function () {
   endGame();
 };
 
-// function to end the entire game
+
+
+// FUNCTION TO END ENTIRE GAME
 var endGame = function () {
   window.alert("The game has now ended. Let's see how you did!");
 
@@ -56,24 +58,17 @@ var endGame = function () {
 
 // fight function (now with parameter for enemy's object holding name, health, and attack values)
 var fight = function (enemy) {
+
+  //keep track of who goes first
+
   while (playerInfo.health > 0 && enemy.health > 0) {
-    // ask user if they'd like to fight or skip using  function
-    var promptFight = window.prompt('Would you like FIGHT or SKIP this battle? Enter "FIGHT" or "SKIP" to choose.');
-
-    // if user picks "skip" confirm and then stop the loop
-    if (promptFight === 'skip' || promptFight === 'SKIP') {
-      // confirm user wants to skip
-      var confirmSkip = window.confirm("Are you sure you'd like to quit?");
-
-      // if yes (true), leave fight
-      if (confirmSkip) {
-        window.alert(playerName + ' has decided to skip this fight. Goodbye!');
-        // subtract money from playerMoney for skipping
-        playerMoney = playerMoney - 10;
-        shop();
-        break;
-      }
+    // ask user if they'd like to fight or skip using fightOrSkip function
+    if (fightOrSkip()) {
+      // if true, leave fight by breaking loop
+      break;
     }
+
+  // fight logic
 
     var damage = randomNumber(playerInfo.attack - 3, playerInfo.attack);
 
@@ -165,19 +160,65 @@ var shop = function () {
   }
 };
 
+// function to set name
+var getPlayerName = function() {
+  var name = "";
+
+  while (name === "" || name === null) {
+    name = prompt("What is your robot's name?");
+  }
+
+  console.log("Your robot's name is " + name);
+  return name;
+};
+
 // function to generate a random numeric value
 var randomNumber = function (min, max) {
   var value = Math.floor(Math.random() * (max - min) + min);
 
   return value;
 };
+
+// function to check if player wants to fight or skip
+var fightOrSkip = function() {
+  // ask user if they'd like to fight or skip using  function
+  var promptFight = window.prompt('Would you like FIGHT or SKIP this battle? Enter "FIGHT" or "SKIP" to choose.');
+
+  // Conditional Recursive Function Call
+  if (promptFight === "" || promptFight === null) {
+    window.alert("You need to provide a valid answer! Please try again.");
+    return fightOrSkip();
+  }
+
+  // convert promptFight to all lowercase so we can check with less options
+  promptFight = promptFight.toLowerCase();
+
+  if (promptFight === "skip") {
+    // confirm user wants to skip
+    var confirmSkip = window.confirm("Are you sure you'd like to quit?");
+
+    // if yes (true), leave fight
+    if (confirmSkip) {
+      window.alert(playerInfo.name + " has decided to skip this fight. Goodbye!");
+      // subtract money from playerMoney for skipping, but don't let them go into the negative
+      playerInfo.money = Math.max(0, playerInfo.money - 10);
+      // stop while() loop using break; and enter next fight
+
+      // return true if user wants to leave
+      return true;
+    }
+  }
+  return false;
+};
+
 /* END GAME FUNCTIONS */
 
 /* GAME INFORMATION / VARIABLES */
 
 // player information
+
 var playerInfo = {
-  name: window.prompt("What is your robot's name?"),
+  name: getPlayerName(),
   health: 100,
   attack: 10,
   money: 10,
